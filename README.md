@@ -1,8 +1,10 @@
 # SophiaRonquillo.github.io
 
 <h1>CS 351 Class Projects</h1>
+<a href = "https://github.com/SophiaRonquillo/SophiaRonquillo.github.io.git">Github Link to Code</a>
 
-Project: Guess the Number Game
+
+<h1>Project: Guess the Number Game</h1>
 
 <p>Guess the Number Game is a simple web-based game built using HTML, CSS, and JavaScript. The goal of the game is for the player to guess a randomly generated number between 1 and 100. 
 After each guess, the game provides feedback indicating whether the secret number is higher or lower than the player's guess. The player can see the number of attempts and a history of all previous guesses.
