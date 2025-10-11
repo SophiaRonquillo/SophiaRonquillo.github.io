@@ -9,4 +9,3 @@ After each guess, the game provides feedback indicating whether the secret numbe
 The interface features a light orange background for a warm, playful feel, and it's also my favorite color, a green "Guess" button for action emphasis, and an easy-to-read card layout. A “New Game” button allows players to start over at any time. 
 This project demonstrates basic front-end skills, including user input handling, conditional logic, DOM manipulation, and responsive styling.</p>
 
-<a href = "file:///Users/sophiaronquillo/Desktop/CS%20351/HTML/guessnum.html">Click here to play Guess the Number Game</a>
