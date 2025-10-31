@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Guess the Number Game</title>
+  <style>
+    * { box-sizing: border-box; }
+    html,body { 
+      height:100%; margin:0; 
+      font-family: Arial, sans-serif;
+      background-color: #FFD580; /* light orange */
+      color:#333; 
+    }
+
+    .wrap { 
+      min-height:100vh; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      padding:24px; 
+    }
+
+    .card {
+      width:100%;
+      max-width:520px;
+      background: #fff7e6; /* light card color */
+      border: 1px solid #f0c27b;
+      border-radius:16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      padding:28px;
+    }
+
+    header { 
+      display:flex; 
+      align-items:center; 
+      gap:16px; 
+      margin-bottom:18px; 
+    }
+
+    .logo {
+      width:56px; height:56px; border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      background: #FFA500;
+      color:#fff; font-weight:700; font-size:20px;
+    }
+
+    h1 { font-size:22px; margin:0; color:#333; }
+    p.lead { margin:6px 0 0; color:#555; font-size:14px; }
+
+    .controls { display:flex; gap:12px; margin-top:16px; align-items:center; flex-wrap:wrap; }
+    label { font-size:13px; color:#444; }
+    input[type="number"] {
+      padding:10px 12px; border-radius:8px; border:1px solid #ccc;
+      background:#fff; color:#333; font-size:16px; width:140px;
+      outline: none;
+    }
+
+    button {
+      padding:10px 14px; border-radius:10px; border: none; cursor: pointer;
+      color:white; font-weight:600; font-size:14px;
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s;
+    }
+
+    /* Green Guess button */
+    #submitBtn {
+      background: linear-gradient(180deg,#34d399,#059669);
+      box-shadow: 0 6px 18px rgba(16,185,129,0.25);
+    }
+
+    button.secondary {
+      background:#ddd; color:#333;
+    }
+
+    button:active { transform: translateY(1px) scale(.997); }
+    button[disabled] { opacity:0.55; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    .feedback {
+      margin-top:18px; padding:14px; border-radius:10px; min-height:48px;
+      background: #fff2cc;
+      border:1px solid #ffe599;
+      display:flex; align-items:center; gap:12px;
+    }
+
+    .hint { font-weight:700; font-size:16px; color:#333; }
+    .hint.small { font-weight:600; font-size:13px; color:#555; }
+
+    .meta { display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:12px; flex-wrap:wrap; }
+    .attempts { color:#444; font-weight:600; }
+    .history { margin-top:12px; background:#fffbea; padding:12px; border-radius:10px; font-size:13px; color:#333; max-height:120px; overflow:auto; border:1px dashed #f0c27b; }
+
+    .win {
+      animation: pop 600ms ease forwards;
+      background: #d1fae5;
+      border:1px solid #10b981;
+      box-shadow: 0 12px 40px rgba(16,185,129,0.3);
+    }
+
+    @keyframes pop {
+      from { transform: scale(.99); }
+      60% { transform: scale(1.03); }
+      to { transform: scale(1); }
+    }
+
+    @media (max-width:420px) {
+      .controls { flex-direction:column; align-items:stretch; }
+      input[type="number"] { width:100%; }
+      header { gap:12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="card" role="main" aria-labelledby="title">
+      <header>
+        <div class="logo" aria-hidden="true">G1</div>
+        <div>
+          <h1 id="title">Guess the Number Game</h1>
+          <p class="lead">Try to guess the secret number. I'll tell you whether to go higher or lower.</p>
+        </div>
+      </header>
+
+      <form id="guessForm" class="controls" aria-describedby="rangeDesc">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label for="guessInput">Your guess</label>
+          <input id="guessInput" type="number" inputmode="numeric" autocomplete="off" min="1" max="100" required />
+          <div id="rangeDesc" class="hint small">Enter a whole number (1–100)</div>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="submitBtn" type="submit">Guess</button>
+          <button id="resetBtn" type="button" class="secondary" title="Start a new game">New game</button>
+        </div>
+      </form>
+
+      <div id="feedback" class="feedback" aria-live="polite">
+        <div class="hint small">Make your first guess!</div>
+      </div>
+
+      <div class="meta">
+        <div class="attempts" id="attempts">Attempts: 0</div>
+        <div id="lastResult" class="hint small">—</div>
+      </div>
+
+      <div class="history" aria-live="polite" id="history" role="log" aria-label="Guess history">
+        No guesses yet.
+      </div>
+    </main>
+  </div>
+</body>
+</html>
