@@ -1,0 +1,37 @@
+<div class="wrap">
+  <main class="card" role="main" aria-labelledby="title">
+    <header>
+      <div class="logo" aria-hidden="true">G1</div>
+      <div>
+        <h1 id="title">Guess the Number Game</h1>
+        <p class="lead">Try to guess the secret number. I'll tell you whether to go higher or lower.</p>
+      </div>
+    </header>
+
+    <form id="guessForm" class="controls" aria-describedby="rangeDesc">
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label for="guessInput">Your guess</label>
+        <input id="guessInput" type="number" inputmode="numeric" autocomplete="off" min="1" max="100" required />
+        <div id="rangeDesc" class="hint small">Enter a whole number (1–100)</div>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="submitBtn" type="submit">Guess</button>
+        <button id="resetBtn" type="button" class="secondary" title="Start a new game">New game</button>
+      </div>
+    </form>
+
+    <div id="feedback" class="feedback" aria-live="polite">
+      <div class="hint small">Make your first guess!</div>
+    </div>
+
+    <div class="meta">
+      <div class="attempts" id="attempts">Attempts: 0</div>
+      <div id="lastResult" class="hint small">—</div>
+    </div>
+
+    <div class="history" aria-live="polite" id="history" role="log" aria-label="Guess history">
+      No guesses yet.
+    </div>
+  </main>
+</div>
