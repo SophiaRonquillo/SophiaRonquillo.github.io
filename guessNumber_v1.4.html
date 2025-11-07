@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Guess the Number Game</title>
+
+  <style>
+    /* ------------------------------
+       BASIC PAGE STYLING
+       ------------------------------ */
+    * { box-sizing: border-box; }
+
+html, body {
+  height:100%; 
+  margin:0;
+  font-family: Arial, sans-serif;
+  
+  /* 🎃 Add image */
+  background-image: url('enchanted-anime-forest-autumn-woodland-background-with-golden-hues_1263357-1428.jpg');
+  /*
+  if I want a Holloween feel: 'painting-sunset-with-bats-flying-sky_1258715-72243'
+  */
+  background-size: cover;          /* Make it fill the whole screen */
+  background-repeat: no-repeat;    /* Prevent tiling */
+  background-position: center;     /* Center the image */
+  background-attachment: fixed;    /* Keeps image fixed while scrolling */
+  
+  color:#fff;                      /* Text color adjusted for darker bg */
+}
+
+    /* Main wrapper centers the card */
+    .wrap { 
+      min-height:100vh; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      padding:24px; 
+    }
+
+  .card {
+  width: 100%;
+  max-width: 540px;
+  background: rgba(255, 247, 230, 0.9); /* light with transparency */
+  border: 1px solid #f0c27b;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  padding: 28px;
+  color: #000; /* ensure all text inside stays black */
+}
+
+
+    /* Header styling (logo + title) */
+    header { 
+      display:flex; 
+      align-items:center; 
+      gap:16px; 
+      margin-bottom:18px; 
+    }
+
+    /* Logo box */
+    .logo {
+      width:56px; height:56px;
+      border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      background:#FFA500;
+      color:#fff; font-weight:700; font-size:20px;
+    }
+
+    h1 { font-size:22px; margin:0; color:#333; }
+    p.lead { margin:6px 0 0; color:#555; font-size:14px; }
+
+    /* Input and select styling */
+    select, input[type="number"] {
+      padding:10px 12px; border-radius:8px; border:1px solid #ccc;
+      background:#fff; color:#333; font-size:16px; outline:none;
+    }
+
+    /* Flex layout for form controls and buttons */
+    .controls { 
+      display:flex; gap:12px; margin-top:16px; 
+      align-items:center; flex-wrap:wrap; 
+    }
+
+    /* Buttons */
+    button {
+      padding:10px 14px; border-radius:10px; border:none; cursor:pointer;
+      color:white; font-weight:600; font-size:14px;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+    /* Primary “Guess” button style */
+    #submitBtn { 
+      background:linear-gradient(180deg,#34d399,#059669); 
+      box-shadow:0 6px 18px rgba(16,185,129,0.25); 
+    }
+
+    /* Secondary button for “New Game” */
+    button.secondary { background:#ddd; color:#333; }
+
+    /* Feedback box (area that shows hints or results) */
+    .feedback { 
+      margin-top:18px; padding:14px; border-radius:10px; background:#fff2cc;
+      border:1px solid #ffe599; display:flex; align-items:center; 
+      gap:12px; min-height:48px; 
+    }
+
+    /* Text styles */
+    .hint { font-weight:700; font-size:16px; color:#333; text-align:center; }
+    .hint.small { font-weight:600; font-size:13px; color:#555; }
+
+    /* Meta info area (attempts, timer) */
+    .meta { 
+      display:flex; justify-content:space-between; align-items:center; 
+      margin-top:12px; flex-wrap:wrap; 
+    }
+
+    /* Guess history and scoreboard boxes */
+    .history, .scoreboard {
+      margin-top:12px; background:#fffbea; padding:12px; border-radius:10px;
+      font-size:13px; color:#333; border:1px dashed #f0c27b; 
+      max-height:140px; overflow:auto;
+    }
+
+    .timer { font-weight:600; color:#444; }
+
+    /* Win animation (green highlight when you win) */
+    .win { 
+      animation: pop 600ms ease forwards; 
+      background:#d1fae5; 
+      border:1px solid #10b981;
+      box-shadow:0 12px 40px rgba(16,185,129,0.3); 
+    }
+
+    /* Keyframe for pop animation */
+    @keyframes pop { 
+      from {transform:scale(.98);} 
+      60% {transform:scale(1.03);} 
+      to {transform:scale(1);} 
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class = "card" role = "main" aria-labelledby = "title">
+      <!-- GAME HEADER -->
+      <header>
+        <div class="logo">GTN</div> <!--our logo GNG for Guess The Number-->
+        <div>
+          <h1 id="title">It's Time To Play 🥁🥁🥁🥁🥁🥁 "Guess The Number"!!!</h1>
+          <p class="lead">Please select a difficulty level, guess the number, and try to beat your record!</p>
+        </div>
+      </header>
+
+      <!-- DIFFICULTY SELECTOR -->
+      <div class = "controls">
+        <label for = "difficulty">Difficulty:</label>
+        <select id = "difficulty">
+          <option value = "easy">Easy (1–50)</option>
+          <option value = "medium" selected>Medium (1–100)</option>
+          <option value = "hard">Hard (1–200)</option>
+        </select>
+      </div>
+
+      <!-- MAIN FORM: input + buttons -->
+      <form id = "guessForm" class="controls">
+        <div style= "display:flex;flex-direction:column;gap:6px;">
+          <label for = "guessInput">Your guess</label>
+          <!-- number input -->
+          <input id = "guessInput" type = "number" min = "1" max = "100" required />
+          <div id = "rangeDisplay" class = "hint small">Range: 1–100</div>
+        </div>
+
+        <!-- Buttons section -->
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id = "submitBtn" type = "submit">Guess</button>
+          <button id = "resetBtn" type = "button" class= "secondary">New game</button>
+        </div>
+      </form>
+
+      <!-- FEEDBACK / RESULT AREA -->
+      <div id= "feedback" class= "feedback">
+        <div class= "hint small">Make your first guess!</div>
+      </div>
+
+      <!-- ATTEMPTS + TIMER DISPLAY -->
+      <div class= "meta">
+        <div class= "attempts" id="attempts">Attempts: 0</div>
+        <div class="timer" id="timer">Time: 0s</div>
+      </div>
+
+      <!-- GUESS HISTORY LOG -->
+      <div class="history" id="history">No guesses yet.</div>
+
+      <!-- SCOREBOARD -->
+      <div class="scoreboard" id="scoreboard">Loading scoreboard...</div>
+    </main>
+  </div>
+
+  <script>
+    /* ==========================================================
+       DOM ELEMENT REFERENCES
+       ========================================================== */
+    const input = document.getElementById('guessInput');          // User input field
+    const form = document.getElementById('guessForm');            // Form element
+    const feedback = document.getElementById('feedback');         // Feedback message area
+    const attemptsEl = document.getElementById('attempts');       // Attempts counter
+    const timerEl = document.getElementById('timer');             // Timer display
+    const historyEl = document.getElementById('history');         // Guess history
+    const rangeDisplay = document.getElementById('rangeDisplay'); // Range hint text
+    const resetBtn = document.getElementById('resetBtn');         // "New game" button
+    const difficultySelect = document.getElementById('difficulty'); // Difficulty dropdown
+    const scoreboardEl = document.getElementById('scoreboard');   // Scoreboard display
+
+    /* ==========================================================
+       GAME STATE VARIABLES
+       ========================================================== */
+    let secret, min, max, attempts, history, gameOver, startTime, timerInt;
+    // scoreboard stores total games and best time
+    let scoreboard = { games: 0, bestTime: null, totalAttempts: 0 };
+
+    /* ==========================================================
+       FUNCTION: setRange()
+       Sets the range for random number based on difficulty.
+       ========================================================== */
+    function setRange(diff) {
+      if (diff === 'easy') { 
+        min = 1; max = 50; 
+      } else if (diff === 'hard') { 
+        min = 1; max = 200; 
+      } else { 
+        min = 1; max = 100; 
+      }
+      // Update visible text
+      rangeDisplay.textContent = `Range: ${min}–${max}`;
+    }
+
+    /* ==========================================================
+       FUNCTION: newGame()
+       Starts or resets the game with a new secret number.
+       ========================================================== */
+    function newGame() {
+      // Set number range based on difficulty level
+      setRange(difficultySelect.value);
+
+      // Generate a random secret number between min and max
+      secret = Math.floor(Math.random() * (max - min + 1)) + min;
+
+      // Reset state variables
+      attempts = 0;
+      history = [];
+      gameOver = false;
+
+      // Reset input and UI elements
+      input.disabled = false;
+      input.value = '';
+      feedback.textContent = 'Make your first guess!';
+      attemptsEl.textContent = 'Attempts: 0';
+      timerEl.textContent = 'Time: 0s';
+      feedback.classList.remove('win');
+
+      // Clear any running timer before starting a new one
+      clearInterval(timerInt);
+      startTime = Date.now();
+
+      // Start timer interval (updates every second)
+      timerInt = setInterval(() => {
+        timerEl.textContent = `Time: ${Math.floor((Date.now() - startTime)/1000)}s`;
+      }, 1000);
+
+      // Show empty history list
+      renderHistory();
+    }
+
+    /* ==========================================================
+       FUNCTION: renderHistory()
+       Updates the history box with all previous guesses.
+       ========================================================== */
+    function renderHistory() {
+      if (!history.length) {
+        historyEl.textContent = 'No guesses yet.';
+        return;
+      }
+      // Build list of previous guesses with hints
+      historyEl.innerHTML = history.map(g => `<div>${g.value} → ${g.hint}</div>`).join('');
+    }
+
+    /* ==========================================================
+       EVENT: When the user submits a guess
+       ========================================================== */
+    form.addEventListener('submit', (e) => {
+      e.preventDefault(); // Prevent form reload
+
+      // Do nothing if the game is already finished
+      if (gameOver) return;
+
+      // Convert input to a number
+      const guess = Number(input.value);
+
+      // Validate guess: must be within allowed range
+      if (!guess || guess < min || guess > max) {
+        feedback.textContent = `Please enter a number between ${min} and ${max}.`;
+        return;
+      }
+
+      // Increment attempts counter
+      attempts++;
+      attemptsEl.textContent = `Attempts: ${attempts}`;
+
+      // WINNING CONDITION
+      if (guess === secret) {
+        // Display big congratulations message with clapping emojis
+        feedback.innerHTML = `<div class="hint">👏👏👏 CONGRATULATIONS! THE NUMBER WAS ${secret} YEHHHH!!!! 👏👏👏</div>`;
+        feedback.classList.add('win'); // Add green “win” highlight
+        endGame(true); // Stop the game
+      } 
+      // WRONG GUESS CONDITION
+      else {
+        // Show hint (Higher or Lower)
+        const hint = guess < secret ? 'Higher' : 'Lower';
+        feedback.textContent = `${hint}! Try a ${hint === 'Higher' ? 'larger' : 'smaller'} number.`;
+        // Add to history
+        history.unshift({ value: guess, hint });
+        renderHistory();
+      }
+
+      // Clear and refocus input for next guess
+      input.value = '';
+      input.focus();
+    });
+
+    /* ==========================================================
+       FUNCTION: endGame()
+       Stops the timer and disables input after the game ends.
+       ========================================================== */
+    function endGame(won) {
+      gameOver = true;
+      clearInterval(timerInt); // stop timer
+      const timeTaken = Math.floor((Date.now() - startTime)/1000); // calculate total time
+      input.disabled = true; // disable guessing
+
+      // If won, update scoreboard stats
+      if (won) updateScoreboard(timeTaken, attempts);
+      else feedback.textContent = `❌ The number was ${secret}.`;
+    }
+
+    /* ==========================================================
+       EVENT: Reset button and difficulty change
+       ========================================================== */
+    resetBtn.addEventListener('click', newGame);
+    difficultySelect.addEventListener('change', newGame);
+
+    /* ==========================================================
+       FUNCTION: updateScoreboard()
+       Simulates sending results to an API and updates stats.
+       ========================================================== */
+    async function updateScoreboard(time, attempts) {
+      // Simulate POST request to backend (mock)
+      await fetch('/api/scoreboard', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ time, attempts })
+      });
+
+      // Update local scoreboard stats
+      scoreboard.games++;
+      scoreboard.totalAttempts += attempts;
+      if (!scoreboard.bestTime || time < scoreboard.bestTime) scoreboard.bestTime = time;
+
+      // Refresh scoreboard display
+      renderScoreboard();
+    }
+
+    /* ==========================================================
+       FUNCTION: renderScoreboard()
+       Shows updated scoreboard info on the page.
+       ========================================================== */
+    function renderScoreboard() {
+      const avg = scoreboard.games ? (scoreboard.totalAttempts / scoreboard.games).toFixed(1) : 0;
+      scoreboardEl.innerHTML = `
+        <b>Games played:</b> ${scoreboard.games}<br>
+        <b>Best time:</b> ${scoreboard.bestTime || '—'}s<br>
+        <b>Avg attempts:</b> ${avg}
+      `;
+    }
+
+    /* ==========================================================
+       MOCK API: For demonstration only
+       (Logs “fake” fetch calls to console instead of a real server)
+       ========================================================== */
+    window.fetch = async (url, opts) => {
+      console.log('Mock API call:', url, opts);
+      return new Response(JSON.stringify({ status: 'ok' }), { status: 200 });
+    };
+
+    /* ==========================================================
+       Start the first game automatically when the page loads
+       ========================================================== */
+    newGame();
+  </script>
+</body>
+</html>
